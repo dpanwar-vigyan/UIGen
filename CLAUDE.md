@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Environment
+
+Copy `.env` and set `ANTHROPIC_API_KEY` to use real Claude generation. Without it, the app falls back to a `MockLanguageModel` that returns canned static components — useful for dev without an API key.
+
 ## Commands
 
 ```bash
@@ -10,6 +14,12 @@ npm run setup
 
 # Development server (with Turbopack)
 npm run dev
+
+# Development server in background (logs to logs.txt)
+npm run dev:daemon
+
+# Production build
+npm run build
 
 # Run all tests
 npm test
