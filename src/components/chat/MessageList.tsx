@@ -2,8 +2,72 @@
 
 import { Message } from "ai";
 import { cn } from "@/lib/utils";
-import { User, Bot, Loader2 } from "lucide-react";
+import { User, Bot, Loader2, FilePlus, FileEdit, Trash2, FolderInput } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+
+function ToolInvocationBadge({ toolName, args, state }: { toolName: string; args: any; state: string }) {
+  const isPending = state !== "result";
+
+  let Icon = FileEdit;
+  let label = toolName;
+  let actionLabel = "";
+
+  if (toolName === "str_replace_editor" && args) {
+    const path = args.path ?? "";
+    switch (args.command) {
+      case "create":
+        Icon = FilePlus;
+        actionLabel = "Creating";
+        label = path;
+        break;
+      case "str_replace":
+        Icon = FileEdit;
+        actionLabel = "Editing";
+        label = path;
+        break;
+      case "insert":
+        Icon = FileEdit;
+        actionLabel = "Inserting into";
+        label = path;
+        break;
+      case "view":
+        Icon = FileEdit;
+        actionLabel = "Reading";
+        label = path;
+        break;
+      default:
+        label = path || toolName;
+    }
+  } else if (toolName === "file_manager" && args) {
+    const path = args.path ?? "";
+    if (args.command === "delete") {
+      Icon = Trash2;
+      actionLabel = "Deleting";
+      label = path;
+    } else if (args.command === "rename") {
+      Icon = FolderInput;
+      actionLabel = "Renaming";
+      label = path;
+    }
+  }
+
+  return (
+    <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-neutral-50 rounded-lg border border-neutral-200 text-xs w-fit max-w-full">
+      <div className={cn("flex-shrink-0 w-5 h-5 rounded flex items-center justify-center", isPending ? "bg-blue-100" : "bg-emerald-100")}>
+        {isPending
+          ? <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+          : <Icon className="w-3 h-3 text-emerald-600" />
+        }
+      </div>
+      {actionLabel && (
+        <span className={cn("font-medium flex-shrink-0", isPending ? "text-blue-700" : "text-emerald-700")}>
+          {actionLabel}
+        </span>
+      )}
+      <span className="font-mono text-neutral-600 truncate">{label}</span>
+    </div>
+  );
+}
 
 interface MessageListProps {
   messages: Message[];
@@ -77,19 +141,12 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                           case "tool-invocation":
                             const tool = part.toolInvocation;
                             return (
-                              <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs font-mono border border-neutral-200">
-                                {tool.state === "result" && tool.result ? (
-                                  <>
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                    <span className="text-neutral-700">{tool.toolName}</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
-                                    <span className="text-neutral-700">{tool.toolName}</span>
-                                  </>
-                                )}
-                              </div>
+                              <ToolInvocationBadge
+                                key={partIndex}
+                                toolName={tool.toolName}
+                                args={tool.args}
+                                state={tool.state}
+                              />
                             );
                           case "source":
                             return (
