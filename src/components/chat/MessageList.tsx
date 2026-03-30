@@ -69,20 +69,43 @@ function ToolInvocationBadge({ toolName, args, state }: { toolName: string; args
   );
 }
 
+const EXAMPLE_PROMPTS = [
+  "Pricing card with plans",
+  "Login form",
+  "Dark mode toggle",
+  "Navigation bar",
+  "Todo list",
+  "Stats dashboard",
+];
+
 interface MessageListProps {
   messages: Message[];
   isLoading?: boolean;
+  onPromptSelect?: (prompt: string) => void;
 }
 
-export function MessageList({ messages, isLoading }: MessageListProps) {
+export function MessageList({ messages, isLoading, onPromptSelect }: MessageListProps) {
   if (messages.length === 0) {
     return (
-      <div className="flex flex-col items-center px-4 text-center">
+      <div className="flex flex-col items-center w-full px-6 text-center">
         <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 mb-4 shadow-sm">
           <Bot className="h-7 w-7 text-blue-600" />
         </div>
-        <p className="text-neutral-900 font-semibold text-lg mb-2">Start a conversation to generate React components</p>
-        <p className="text-neutral-500 text-sm max-w-sm">I can help you create buttons, forms, cards, and more</p>
+        <p className="text-neutral-900 font-semibold text-base mb-1">Generate React components</p>
+        <p className="text-neutral-500 text-sm mb-6">Describe what you want to build</p>
+        {onPromptSelect && (
+          <div className="grid grid-cols-2 gap-2 w-full">
+            {EXAMPLE_PROMPTS.map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => onPromptSelect(prompt)}
+                className="px-3 py-2 text-xs rounded-lg border border-neutral-200 bg-white text-neutral-600 hover:border-blue-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shadow-sm text-center"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
