@@ -1,0 +1,58 @@
+{
+  "permissions": {},
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node $PWD/hooks/read_hook.js"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "# Example: auto-format after writes\n# jq -r '.tool_input.file_path // .tool_response.filePath' | { read -r f; npx prettier --write \"$f\" --ignore-unknown; } 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "# Example: notify when Claude stops\n# echo '{\"systemMessage\": \"Claude has finished.\"}'"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "# Example: run before manual compaction\n# echo 'Compacting...'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "# Example: run at session start\n# echo '{\"systemMessage\": \"Session started.\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
